@@ -13,10 +13,10 @@ type appModel struct {
 
 func InitialAppModel() appModel {
 	var initial tea.Model
-	if Api.Token == "" {
-		initial = initialLoginModel()
+	if Api.LoggedIn() {
+		initial = initialChannelListModel()
 	} else {
-		initial = initialListModel()
+		initial = initialLoginModel()
 	}
 	return appModel{
 		stack: nav.NewStack(initial),

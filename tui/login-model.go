@@ -5,7 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	keyring "github.com/zalando/go-keyring"
+	"github.com/vknabel/go-puffery/nav"
 )
 
 type loginModel struct {
@@ -20,7 +20,7 @@ func initialLoginModel() loginModel {
 	email.Width = 40
 
 	confirmation := textinput.New()
-	confirmation.Placeholder = "9CF62FD6-3AC7-4ADB-840A-2B7CBF1F0F89"
+	confirmation.Placeholder = "00000000-0000-0000-0000-000000000000"
 	confirmation.Width = 40
 
 	return loginModel{email, confirmation}
@@ -50,23 +50,18 @@ func (m loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, func() tea.Msg {
 					_, err := Api.Login(m.emailTextInput.Value())
 					if err != nil {
-						return operationFailedMsg{err}
+						return nav.PagePushMsg{Page: initialErrorModel(err)}
 					}
 					return m.confirmationTextInput.Focus()
 				}
 			} else {
 				m.confirmationTextInput.Blur()
 				return m, func() tea.Msg {
-					token, err := Api.ConfirmLogin(m.confirmationTextInput.Value())
+					_, err := Api.ConfirmLogin(m.confirmationTextInput.Value())
 					if err != nil {
-						return operationFailedMsg{err}
+						return nav.PagePushMsg{Page: initialErrorModel(err)}
 					}
-					err = keyring.Set("puffery.app", "token", token.Token)
-					if err != nil {
-						return operationFailedMsg{err}
-					}
-					Api.Token = token.Token
-					return didLoginMsg{token}
+					return nav.PageReplaceMsg{Page: initialChannelListModel()}
 				}
 			}
 		case tea.KeyCtrlC, tea.KeyEsc:
@@ -86,7 +81,8 @@ func (m loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m loginModel) View() string {
 	return fmt.Sprintf(
-		"What's your puffery email?\n\n%s\n\n%s\n\n%s",
+		"%s\n\nWhat's your puffery email?\n\n%s\n\n%s\n\n%s",
+		titleStyle.Render("Login"),
 		m.emailTextInput.View(),
 		m.confirmationTextInput.View(),
 		"(press esc to quit)",

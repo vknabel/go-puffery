@@ -13,7 +13,7 @@ type channelListModel struct {
 	channelListView list.Model
 }
 
-func initialListModel() channelListModel {
+func initialChannelListModel() channelListModel {
 	channelListViewDelegate := list.NewDefaultDelegate()
 
 	m := channelListModel{
@@ -68,7 +68,7 @@ func (m channelListModel) Init() tea.Cmd {
 	return func() tea.Msg {
 		channels, err := Api.Channels()
 		if err != nil {
-			return operationFailedMsg{err}
+			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}
 		return didLoadChannelsMsg{channels}
 	}

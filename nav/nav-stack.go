@@ -78,6 +78,8 @@ func (m NavStack) Update(msg tea.Msg) (NavStack, tea.Cmd) {
 		return m, m.Pop()
 	case PagePushMsg:
 		return m, m.Push(msg.Page)
+	case PageReplaceMsg:
+		return m, m.Replace(msg.Page)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":

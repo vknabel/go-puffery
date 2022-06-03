@@ -12,16 +12,8 @@ type didLoadMessagesMsg struct {
 	messages []puffery.Message
 }
 
-type operationFailedMsg struct {
-	err error
-}
-
 type viewMessagesOfChannelMsg struct {
 	channel puffery.Channel
 }
 
 type viewMessagesOfAllChannelsMsg struct{}
-
-type didLoginMsg struct {
-	puffery.TokenResponse
-}

@@ -7,6 +7,9 @@ type PagePopMsg struct{}
 type PagePushMsg struct {
 	Page tea.Model
 }
+type PageReplaceMsg struct {
+	Page tea.Model
+}
 
 func Pop() tea.Cmd {
 	return func() tea.Msg {
@@ -17,5 +20,11 @@ func Pop() tea.Cmd {
 func Push(page tea.Model) tea.Cmd {
 	return func() tea.Msg {
 		return PagePushMsg{page}
+	}
+}
+
+func Replace(page tea.Model) tea.Cmd {
+	return func() tea.Msg {
+		return PageReplaceMsg{page}
 	}
 }

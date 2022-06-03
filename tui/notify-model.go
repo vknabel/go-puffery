@@ -7,7 +7,6 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	puffery "github.com/vknabel/go-puffery"
 	"github.com/vknabel/go-puffery/multitext"
 	"github.com/vknabel/go-puffery/nav"
@@ -49,8 +48,6 @@ func (m notifyModel) Init() tea.Cmd {
 
 func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case operationFailedMsg:
-		m.isLoading = false
 	case multitext.TrailingNewlines:
 		if msg.Count == 1 {
 			break
@@ -95,11 +92,6 @@ func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m notifyModel) View() string {
-	title := lipgloss.NewStyle().
-		Background(lipgloss.Color("62")).
-		Foreground(lipgloss.Color("230")).
-		Padding(0, 1)
-
 	var loadingText string
 	if m.isLoading {
 		loadingText = m.loadingSpinner.View() + " Sending..."
@@ -109,7 +101,7 @@ func (m notifyModel) View() string {
 
 	return fmt.Sprintf(
 		"  %s\n\n  %s\n\n  %s\n%s\n",
-		title.Render(m.channel.Title),
+		titleStyle.Copy().Render(m.channel.Title),
 		m.titleInput.View(),
 		m.bodyInput.View(),
 		loadingText,
@@ -124,7 +116,7 @@ func (m *notifyModel) SendNotification() tea.Cmd {
 			Body:  strings.Trim(m.bodyInput.Value(), " \n"),
 		})
 		if err != nil {
-			return operationFailedMsg{err}
+			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}
 		return nav.PagePopMsg{}
 	}

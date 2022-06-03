@@ -44,6 +44,11 @@ func (m NavPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		new.previous = m
 		new.windowSize = m.windowSize
 		return new, new.Init()
+	case PageReplaceMsg:
+		new := NewPage(msg.Page)
+		new.previous = m.previous
+		new.windowSize = m.windowSize
+		return new, new.Init()
 	}
 	m.current, cmd = m.current.Update(msg)
 	cmds = append(cmds, cmd)

@@ -136,7 +136,7 @@ func (m *messageListModel) LoadMessagesOfChannel(channel puffery.Channel) tea.Cm
 	return func() tea.Msg {
 		messages, err := Api.MessagesOfChannel(channel)
 		if err != nil {
-			return operationFailedMsg{err}
+			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}
 		return didLoadMessagesMsg{messages}
 	}
@@ -148,7 +148,7 @@ func (m *messageListModel) LoadMessagesOfAllChannels() tea.Cmd {
 	return func() tea.Msg {
 		messages, err := Api.MessagesOfAllChannels()
 		if err != nil {
-			return operationFailedMsg{err}
+			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}
 		return didLoadMessagesMsg{messages}
 	}
