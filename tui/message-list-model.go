@@ -14,12 +14,26 @@ import (
 type messageListModel struct {
 	channel         *puffery.Channel
 	messageListView list.Model
+
+	keys messageListKeyMap
+}
+
+type messageListKeyMap struct {
+	notify key.Binding
+	back   key.Binding
 }
 
 func initialMessageModel(channel *puffery.Channel) messageListModel {
 	m := messageListModel{
 		channel:         channel,
 		messageListView: list.NewModel(nil, list.NewDefaultDelegate(), 0, 0),
+		keys: messageListKeyMap{
+			notify: key.NewBinding(
+				key.WithKeys("n"),
+				key.WithHelp("n", "notify"),
+			),
+			back: backKeyBinding,
+		},
 	}
 	if channel != nil {
 		m.messageListView.Title = channel.Title
@@ -30,32 +44,16 @@ func initialMessageModel(channel *puffery.Channel) messageListModel {
 	m.messageListView.SetSpinner(spinner.Dot)
 	m.messageListView.DisableQuitKeybindings()
 	m.messageListView.AdditionalShortHelpKeys = func() []key.Binding {
-		return []key.Binding{
-			key.NewBinding(
-				key.WithKeys("+", "n"),
-				key.WithHelp("+/n", "new"),
-			),
-			key.NewBinding(
-				key.WithKeys("esc"),
-				key.WithHelp("esc", "back"),
-			),
+		if channel == nil {
+			return []key.Binding{}
 		}
+		return []key.Binding{m.keys.notify}
 	}
 	m.messageListView.AdditionalFullHelpKeys = func() []key.Binding {
-		return []key.Binding{
-			key.NewBinding(
-				key.WithKeys("esc"),
-				key.WithHelp("esc", "back"),
-			),
-			key.NewBinding(
-				key.WithKeys("+", "n"),
-				key.WithHelp("+/n", "new"),
-			),
-			key.NewBinding(
-				key.WithKeys("r"),
-				key.WithHelp("r", "reload"),
-			),
+		if channel == nil {
+			return []key.Binding{m.keys.back}
 		}
+		return []key.Binding{m.keys.notify, m.keys.back}
 	}
 	return m
 }

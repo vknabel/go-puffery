@@ -1,25 +1,55 @@
 package tui
 
 import (
-	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	puffery "github.com/vknabel/go-puffery"
 	"github.com/vknabel/go-puffery/multitext"
 	"github.com/vknabel/go-puffery/nav"
 )
 
 type notifyModel struct {
-	channel puffery.Channel
-
+	height         int
+	channel        puffery.Channel
 	loadingSpinner spinner.Model
 	isLoading      bool
+	titleInput     textinput.Model
+	bodyInput      multitext.Model
+	help           help.Model
+	keys           notifyKeyMap
+}
 
-	titleInput textinput.Model
-	bodyInput  multitext.Model
+type notifyKeyMap struct {
+	jump key.Binding
+	send key.Binding
+	back key.Binding
+}
+
+func (m notifyModel) ShortHelp() []key.Binding {
+	if m.bodyInput.Focused() {
+		return []key.Binding{
+			m.keys.jump,
+			m.keys.send,
+			m.keys.back,
+		}
+	} else {
+		return []key.Binding{
+			m.keys.jump,
+			m.keys.back,
+		}
+	}
+}
+
+func (n notifyModel) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		n.ShortHelp(),
+	}
 }
 
 func initialNotifyModel(channel puffery.Channel) notifyModel {
@@ -39,6 +69,12 @@ func initialNotifyModel(channel puffery.Channel) notifyModel {
 		titleInput:     title,
 		bodyInput:      body,
 		loadingSpinner: loading,
+		help:           help.New(),
+		keys: notifyKeyMap{
+			jump: key.NewBinding(key.WithKeys("tab"), key.WithHelp("tab", "jump")),
+			send: key.NewBinding(key.WithKeys(), key.WithHelp("⏎⏎", "send")),
+			back: backKeyBinding,
+		},
 	}
 }
 
@@ -59,6 +95,8 @@ func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.isLoading = true
 		return m, tea.Batch(m.loadingSpinner.Tick, m.SendNotification())
+	case tea.WindowSizeMsg:
+		m.height = msg.Height
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyTab, tea.KeyEnter:
@@ -92,20 +130,26 @@ func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m notifyModel) View() string {
-	var loadingText string
+	view := "  " + titleStyle.Render("notify "+m.channel.Title)
+	view += "\n\n"
+	view += "  " + m.titleInput.View()
+	view += "\n\n"
+	view += "  " + m.bodyInput.View()
+
 	if m.isLoading {
-		loadingText = m.loadingSpinner.View() + " Sending..."
-	} else {
-		loadingText = ""
+		view += "  " + m.loadingSpinner.View() + " Sending..."
 	}
 
-	return fmt.Sprintf(
-		"  %s\n\n  %s\n\n  %s\n%s\n",
-		titleStyle.Copy().Render(m.channel.Title),
-		m.titleInput.View(),
-		m.bodyInput.View(),
-		loadingText,
+	availableHeight := m.height
+	availableHeight -= lipgloss.Height(view)
+	view += lipgloss.NewStyle().MarginLeft(2).Render(
+		lipgloss.PlaceVertical(
+			availableHeight,
+			lipgloss.Bottom,
+			m.help.View(m),
+		),
 	)
+	return view
 }
 
 func (m *notifyModel) SendNotification() tea.Cmd {

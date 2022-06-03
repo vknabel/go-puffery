@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vknabel/go-puffery/nav"
@@ -11,6 +12,7 @@ import (
 type loginModel struct {
 	emailTextInput        textinput.Model
 	confirmationTextInput textinput.Model
+	help                  help.Model
 }
 
 func initialLoginModel() loginModel {
@@ -23,7 +25,7 @@ func initialLoginModel() loginModel {
 	confirmation.Placeholder = "00000000-0000-0000-0000-000000000000"
 	confirmation.Width = 40
 
-	return loginModel{email, confirmation}
+	return loginModel{email, confirmation, help.New()}
 }
 
 func (m loginModel) Init() tea.Cmd {
