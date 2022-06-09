@@ -72,7 +72,7 @@ func (m NavStack) initTop() tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (m NavStack) Update(msg tea.Msg) (NavStack, tea.Cmd) {
+func (m NavStack) UpdateModel(msg tea.Msg) (NavStack, tea.Cmd) {
 	switch msg := msg.(type) {
 	case PagePopMsg:
 		return m, m.Pop()
@@ -95,6 +95,10 @@ func (m NavStack) Update(msg tea.Msg) (NavStack, tea.Cmd) {
 	var cmd tea.Cmd
 	m.stack[len(m.stack)-1], cmd = m.Top().Update(msg)
 	return m, cmd
+}
+
+func (m NavStack) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m.UpdateModel(msg)
 }
 
 func (m NavStack) View() string {

@@ -55,10 +55,16 @@ func (n notifyModel) FullHelp() [][]key.Binding {
 func initialNotifyModel(channel puffery.Channel) notifyModel {
 	title := textinput.NewModel()
 	title.Placeholder = "Title"
+	title.PromptStyle = promptStyle
+	title.TextStyle = answerStyle
+	title.PlaceholderStyle = placeholderStyle
 	title.Focus()
 
 	bodyLine := textinput.New()
 	bodyLine.Placeholder = "Body"
+	bodyLine.PromptStyle = promptStyle
+	bodyLine.TextStyle = answerStyle
+	bodyLine.PlaceholderStyle = placeholderStyle
 	body := multitext.New(bodyLine)
 
 	loading := spinner.New()

@@ -15,9 +15,10 @@ func Execute() error {
 
 var rootCmd = &cobra.Command{
 	Use:   "puffery",
-	Short: "Read and send push notifications.",
-	Long: `Read and send push notifications.
-More details at https://github.com/vknabel/puffery`,
+	Short: "Read and send push notifications 🐡.",
+	Long: `Read and send push notifications with Puffery 🐡.
+More details at https://github.com/vknabel/puffery
+`,
 	Version: "0.0.1",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {

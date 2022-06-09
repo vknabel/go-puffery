@@ -14,12 +14,14 @@ type channelListModel struct {
 }
 
 func initialChannelListModel() channelListModel {
-	channelListViewDelegate := list.NewDefaultDelegate()
-
+	channelListViewDelegate := NewStyledDefaultListDelegate()
 	m := channelListModel{
 		channelListView: list.New(nil, channelListViewDelegate, 0, 0),
 	}
 	m.channelListView.Title = "Channels"
+	m.channelListView.Styles.Title = titleStyle
+
+	m.channelListView.View()
 	m.channelListView.SetSpinner(spinner.Dot)
 	m.channelListView.AdditionalShortHelpKeys = func() []key.Binding {
 		return []key.Binding{

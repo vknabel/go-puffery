@@ -22,3 +22,5 @@ go.work
 
 # Build artefacts
 /puffery
+
+dist/

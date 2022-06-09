@@ -26,7 +26,7 @@ type messageListKeyMap struct {
 func initialMessageModel(channel *puffery.Channel) messageListModel {
 	m := messageListModel{
 		channel:         channel,
-		messageListView: list.NewModel(nil, list.NewDefaultDelegate(), 0, 0),
+		messageListView: list.NewModel(nil, NewStyledDefaultListDelegate(), 0, 0),
 		keys: messageListKeyMap{
 			notify: key.NewBinding(
 				key.WithKeys("n"),
@@ -35,6 +35,7 @@ func initialMessageModel(channel *puffery.Channel) messageListModel {
 			back: backKeyBinding,
 		},
 	}
+	m.messageListView.Styles.Title = titleStyle
 	if channel != nil {
 		m.messageListView.Title = channel.Title
 	} else {

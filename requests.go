@@ -1,7 +1,7 @@
 package puffery
 
 type CreateUserRequest struct {
-	Email string `json:"email"`
+	Email *string `json:"email"`
 }
 
 type UpdateProfileRequest struct {

@@ -10,11 +10,15 @@ var Api puffery.Api = puffery.New()
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 var titleStyle = lipgloss.NewStyle().
-	Background(lipgloss.Color("62")).
-	Foreground(lipgloss.Color("230")).
+	Background(colorLagoonGreen).
+	Foreground(colorBackground).
 	Padding(0, 1)
 
 var backKeyBinding = key.NewBinding(
 	key.WithKeys("esc"),
 	key.WithHelp("esc", "back"),
 )
+
+var promptStyle = lipgloss.NewStyle()
+var answerStyle = lipgloss.NewStyle().Foreground(colorLagoonBubbleBlue)
+var placeholderStyle = lipgloss.NewStyle().Foreground(colorPlaceholder)

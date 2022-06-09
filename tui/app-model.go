@@ -6,7 +6,7 @@ import (
 )
 
 type appModel struct {
-	stack nav.NavStack
+	stack tea.Model
 
 	err error
 }
@@ -19,7 +19,7 @@ func InitialAppModel() appModel {
 		initial = initialLoginModel()
 	}
 	return appModel{
-		stack: nav.NewStack(initial),
+		stack: nav.NewPage(initial),
 	}
 }
 

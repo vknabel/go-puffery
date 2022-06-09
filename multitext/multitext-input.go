@@ -44,6 +44,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 					firstLine.PromptStyle.GetMarginLeft() + len(firstLine.Prompt),
 				)
 				newLine.Prompt = strings.Repeat(" ", len(firstLine.Prompt))
+				newLine.TextStyle = firstLine.TextStyle
+				newLine.PlaceholderStyle = firstLine.PlaceholderStyle
 				m.lines = append(m.lines, newLine)
 			}
 			m.focusIndex += 1

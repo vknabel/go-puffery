@@ -124,7 +124,11 @@ func (a Api) Hello() error {
 }
 
 func (a *Api) Register(email string) (TokenResponse, error) {
-	body, err := json.Marshal(CreateUserRequest{Email: email})
+	req := CreateUserRequest{}
+	if email != "" {
+		req.Email = &email
+	}
+	body, err := json.Marshal(req)
 	if err != nil {
 		return TokenResponse{}, err
 	}
