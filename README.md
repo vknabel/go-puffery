@@ -33,7 +33,7 @@ Currently go puffery is still in early development and doesn't yet support all f
 - [ ] Creating and subscribing to channels
 - [ ] Displaying stats of a channel
 
-## Using puffery in your app
+## Embedding puffery in your app
 
 The main puffery module exports the whole API and all of its models.
 Start by creating a new Api
