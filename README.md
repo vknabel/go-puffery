@@ -13,13 +13,28 @@ In case you need inspiration or help, head over to [our GitHub discussions](http
 The easiest way to install and update Puffery on macOS or linux is Homebrew.
 
 ```bash
-$ brew install vknabel/install/puffery
+brew install vknabel/install/puffery
 ```
 
-If you are a gopher and want to install it globally, just run `go install github.com/vknabel/go-puffery@latest`.
-In case you plan to write custom tooling on top of Puffery, you can start by running `go get github.com/vknabel/go-puffery@latest` in your Go module.
+## Using Go
 
-In case you are neither using Homebrew nor Go modules, head over to the [GitHub releases page](https://github.com/vknabel/go-puffery/releases) and download the latest version, that fits your operating system and architecture.
+If you are a gopher and want to install it globally, just run:
+
+```bash
+go install github.com/vknabel/go-puffery@latest
+```
+
+In case you plan to write custom tooling on top of Puffery, start by adding to to your Go module.
+
+```bash
+go get github.com/vknabel/go-puffery@latest
+```
+
+## Manual installation
+
+If you are neither using Homebrew nor Go, head over to the [GitHub releases page](https://github.com/vknabel/go-puffery/releases) and pick the latest version that fits your operating system and architecture.
+
+Unpack the archive and move it to a location of your choice, preferably into a directory in your `$PATH`.
 
 ## Current Status
 
