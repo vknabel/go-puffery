@@ -6,6 +6,7 @@ before:
     - go test ./...
 builds:
   - main: ./cmd/puffery
+    binary: puffery
     env:
       - CGO_ENABLED=0
     goos:
