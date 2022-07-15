@@ -20,5 +20,5 @@ var backKeyBinding = key.NewBinding(
 )
 
 var promptStyle = lipgloss.NewStyle()
-var answerStyle = lipgloss.NewStyle().Foreground(colorLagoonBubbleBlue)
+var answerStyle = lipgloss.NewStyle().Foreground(colorPrimaryBlue)
 var placeholderStyle = lipgloss.NewStyle().Foreground(colorPlaceholder)

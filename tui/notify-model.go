@@ -6,11 +6,11 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	puffery "github.com/vknabel/go-puffery"
-	"github.com/vknabel/go-puffery/multitext"
 	"github.com/vknabel/go-puffery/nav"
 )
 
@@ -20,7 +20,7 @@ type notifyModel struct {
 	loadingSpinner spinner.Model
 	isLoading      bool
 	titleInput     textinput.Model
-	bodyInput      multitext.Model
+	bodyInput      textarea.Model
 	help           help.Model
 	keys           notifyKeyMap
 }
@@ -55,17 +55,15 @@ func (n notifyModel) FullHelp() [][]key.Binding {
 func initialNotifyModel(channel puffery.Channel) notifyModel {
 	title := textinput.NewModel()
 	title.Placeholder = "Title"
-	title.PromptStyle = promptStyle
-	title.TextStyle = answerStyle
-	title.PlaceholderStyle = placeholderStyle
 	title.Focus()
 
-	bodyLine := textinput.New()
-	bodyLine.Placeholder = "Body"
-	bodyLine.PromptStyle = promptStyle
-	bodyLine.TextStyle = answerStyle
-	bodyLine.PlaceholderStyle = placeholderStyle
-	body := multitext.New(bodyLine)
+	body := textarea.New()
+	body.Placeholder = "Body"
+	body.ShowLineNumbers = false
+	body.BlurredStyle.Placeholder = body.BlurredStyle.Placeholder.
+		Foreground(title.PlaceholderStyle.GetForeground())
+	body.FocusedStyle.Placeholder = body.FocusedStyle.Placeholder.
+		Foreground(title.PlaceholderStyle.GetForeground())
 
 	loading := spinner.New()
 	loading.Spinner = spinner.Dot
@@ -90,19 +88,20 @@ func (m notifyModel) Init() tea.Cmd {
 
 func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case multitext.TrailingNewlines:
-		if msg.Count == 1 {
-			break
-		}
-		m.bodyInput.Blur()
-		if m.bodyInput.Value() == "" || m.titleInput.Value() == "" {
-			m.titleInput.Focus()
-			return m, textinput.Blink
-		}
-		m.isLoading = true
-		return m, tea.Batch(m.loadingSpinner.Tick, m.SendNotification())
+	// case multitext.TrailingNewlines:
+	// 	if msg.Count == 1 {
+	// 		break
+	// 	}
+	// 	m.bodyInput.Blur()
+	// 	if m.bodyInput.Value() == "" || m.titleInput.Value() == "" {
+	// 		m.titleInput.Focus()
+	// 		return m, textinput.Blink
+	// 	}
+	// 	m.isLoading = true
+	// 	return m, tea.Batch(m.loadingSpinner.Tick, m.SendNotification())
 	case tea.WindowSizeMsg:
 		m.height = msg.Height
+		m.bodyInput.SetWidth(msg.Width - 4)
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyTab, tea.KeyEnter:
@@ -113,6 +112,16 @@ func (m notifyModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, textinput.Blink
 			case m.bodyInput.Focused():
 				if msg.Type == tea.KeyEnter {
+					value := m.bodyInput.Value()
+					if len(value) > 0 && value[len(value)-1] == '\n' {
+						m.bodyInput.Blur()
+						if m.bodyInput.Value() == "" || m.titleInput.Value() == "" {
+							m.titleInput.Focus()
+							return m, textinput.Blink
+						}
+						m.isLoading = true
+						return m, tea.Batch(m.loadingSpinner.Tick, m.SendNotification())
+					}
 					break
 				}
 				m.bodyInput.Blur()
@@ -140,7 +149,7 @@ func (m notifyModel) View() string {
 	view += "\n\n"
 	view += "  " + m.titleInput.View()
 	view += "\n\n"
-	view += "  " + m.bodyInput.View()
+	view += lipgloss.NewStyle().MarginLeft(2).Render(m.bodyInput.View())
 
 	if m.isLoading {
 		view += "  " + m.loadingSpinner.View() + " Sending..."
