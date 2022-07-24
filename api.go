@@ -3,6 +3,7 @@ package puffery
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -338,8 +339,19 @@ func (a Api) PublicNotify(notifyKey string, req CreateMessageRequest) (NotifyMes
 	return message, err
 }
 
-func (a Api) MessagesOfAllChannels() ([]Message, error) {
-	bodyBytes, err := a.get("api/v1/channels/messages")
+func (req PaginationRequest) query() string {
+	if req.Page < 1 {
+		req.Page = 1
+	}
+	if req.Limit < 1 {
+		req.Limit = 1
+	}
+	return fmt.Sprintf("page=%d&limit=%d", req.Page, req.Limit)
+}
+
+func (a Api) MessagesOfAllChannels(pagination PaginationRequest) ([]Message, error) {
+	url := fmt.Sprintf("api/v1/messages?%s", pagination.query())
+	bodyBytes, err := a.get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -348,8 +360,9 @@ func (a Api) MessagesOfAllChannels() ([]Message, error) {
 	return messages, err
 }
 
-func (a Api) MessagesOfChannel(channel Channel) ([]Message, error) {
-	bodyBytes, err := a.get("api/v1/channels/" + channel.Id + "/messages")
+func (a Api) MessagesOfChannel(channel Channel, pagination PaginationRequest) ([]Message, error) {
+	url := fmt.Sprintf("api/v1/channels/%s/messages?%s", channel.Id, pagination.query())
+	bodyBytes, err := a.get(url)
 	if err != nil {
 		return nil, err
 	}

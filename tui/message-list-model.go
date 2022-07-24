@@ -133,7 +133,7 @@ func (m *messageListModel) LoadMessagesOfChannel(channel puffery.Channel) tea.Cm
 	m.messageListView.Title = channel.Title
 	m.channel = &channel
 	return func() tea.Msg {
-		messages, err := Api.MessagesOfChannel(channel)
+		messages, err := Api.MessagesOfChannel(channel, puffery.PaginationRequest{Page: 1, Limit: 100})
 		if err != nil {
 			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}
@@ -145,7 +145,7 @@ func (m *messageListModel) LoadMessagesOfAllChannels() tea.Cmd {
 	m.messageListView.Title = "All messages"
 	m.channel = nil
 	return func() tea.Msg {
-		messages, err := Api.MessagesOfAllChannels()
+		messages, err := Api.MessagesOfAllChannels(puffery.PaginationRequest{Page: 1, Limit: 100})
 		if err != nil {
 			return nav.PagePushMsg{Page: initialErrorModel(err)}
 		}

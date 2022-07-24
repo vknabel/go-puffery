@@ -40,3 +40,8 @@ type CreateDeviceRequest struct {
 type UpdateDeviceRequest struct {
 	IsProduction bool `json:"isProduction"`
 }
+
+type PaginationRequest struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}
